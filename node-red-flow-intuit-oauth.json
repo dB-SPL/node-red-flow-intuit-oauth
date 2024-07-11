@@ -1,0 +1,1051 @@
+[
+    {
+        "id": "aa64779bae1a6694",
+        "type": "tab",
+        "label": "Intuit OAuth2 - Sandbox",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "abaca652bd5a11f3",
+        "type": "function",
+        "z": "aa64779bae1a6694",
+        "name": "set variables",
+        "func": "let access_token_timer_enabled = {};\nlet access_token_timer_countdown = {};\nlet refresh_token_timer_enabled = {};\nlet refresh_token_timer_countdown = {};\n\nif (msg.oauth2Response.refresh_token) {\n    flow.set('refresh_token', msg.oauth2Response.refresh_token);\n}\nif (msg.oauth2Response.access_token) {\n    flow.set('access_token', msg.oauth2Response.access_token);\n}\nif (msg.oauth2Response.id_token) {\n    flow.set('id_token', msg.oauth2Response.id_token);\n}\nif (msg.oauth2Response.x_refresh_token_expires_in) {\n    flow.set('x_refresh_token_expires_in', msg.oauth2Response.x_refresh_token_expires_in);\n}\nif (msg.token) {\n    if (msg.token.sub) {\n        flow.set('sub', msg.token.sub);\n    }\n    if (msg.token.aud) {\n        flow.set('aud', msg.token.aud);\n    }\n    if (msg.token.realmid) {\n        flow.set('realmId', msg.token.realmid);\n    }\n}\nif (msg.oauth2Response.expires_in) {\n    access_token_timer_enabled = {\n        payload: true,\n    }\n} else {\n    access_token_timer_enabled = {\n        payload: false,\n    }\n}\nif (msg.oauth2Response.expires_in) {\n    access_token_timer_enabled = {\n        payload: true\n    }\n} else {\n    access_token_timer_enabled = {\n        payload: false\n    }\n}\nif (msg.oauth2Response.expires_in) {\n    access_token_timer_countdown = {\n        payload: msg.oauth2Response.expires_in\n    }\n}\nif (msg.oauth2Response.x_refresh_token_expires_in) {\n    refresh_token_timer_countdown = {\n        payload: msg.oauth2Response.x_refresh_token_expires_in\n    }\n}\nif (msg.oauth2Response.x_refresh_token_expires_in) {\n    refresh_token_timer_enabled = {\n        payload: true\n    }\n} else {\n    refresh_token_timer_enabled = {\n        payload: false\n    }\n}\nreturn [msg, access_token_timer_countdown, access_token_timer_enabled, refresh_token_timer_countdown, refresh_token_timer_enabled];",
+        "outputs": 5,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 340,
+        "wires": [
+            [
+                "82002e888086480c"
+            ],
+            [
+                "0459015fc79419f6"
+            ],
+            [
+                "1138f94486b78cd6"
+            ],
+            [
+                "aa43d987da215d9e"
+            ],
+            [
+                "3b3d4e88ce3ddbea"
+            ]
+        ]
+    },
+    {
+        "id": "faf441f849e9bf70",
+        "type": "inject",
+        "z": "aa64779bae1a6694",
+        "name": "oauth2 details",
+        "props": [
+            {
+                "p": "oauth2Response.access_token",
+                "v": "access_token",
+                "vt": "flow"
+            },
+            {
+                "p": "oauth2Response.refresh_token",
+                "v": "refresh_token",
+                "vt": "flow"
+            },
+            {
+                "p": "oauth2Response.id_token",
+                "v": "id_token",
+                "vt": "flow"
+            },
+            {
+                "p": "oauth2Response.access_token_url",
+                "v": "access_token_url",
+                "vt": "flow"
+            },
+            {
+                "p": "oauth2Response.authorization_endpoint",
+                "v": "authorization_endpoint",
+                "vt": "flow"
+            },
+            {
+                "p": "oauth2Response.revocation_endpoint",
+                "v": "revocation_endpoint",
+                "vt": "flow"
+            },
+            {
+                "p": "oauth2Response.realmId",
+                "v": "realmId",
+                "vt": "flow"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 910,
+        "y": 80,
+        "wires": [
+            [
+                "3f2f84d03bbf3ceb"
+            ]
+        ]
+    },
+    {
+        "id": "e3148e55b269c477",
+        "type": "inject",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 55,
+        "y": 80,
+        "wires": [
+            [
+                "ca147536495c791c"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "ca147536495c791c",
+        "type": "http request",
+        "z": "aa64779bae1a6694",
+        "name": "Intuit API Discovery",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "developer.api.intuit.com/.well-known/openid_sandbox_configuration",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 190,
+        "y": 80,
+        "wires": [
+            [
+                "52542160f53ca86d"
+            ]
+        ]
+    },
+    {
+        "id": "29f60fcc4d05a870",
+        "type": "debug",
+        "z": "aa64779bae1a6694",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 705,
+        "y": 80,
+        "wires": [],
+        "l": false
+    },
+    {
+        "id": "52542160f53ca86d",
+        "type": "json",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 315,
+        "y": 80,
+        "wires": [
+            [
+                "10bf19329a3c0ec5"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "7937ccc739614f55",
+        "type": "change",
+        "z": "aa64779bae1a6694",
+        "name": "config",
+        "rules": [
+            {
+                "t": "set",
+                "p": "scope",
+                "pt": "flow",
+                "to": "openid profile address email phone com.intuit.quickbooks.accounting com.intuit.quickbooks.payment",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "redirect_uri",
+                "pt": "flow",
+                "to": "https://example.com/redir",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "redir_after_connect",
+                "pt": "flow",
+                "to": "https://example.com/connect-success",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "redir_after_connect_fail",
+                "pt": "flow",
+                "to": "https://example.com/connect_failure",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "authorization_endpoint",
+                "pt": "flow",
+                "to": "payload.authorization_endpoint",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "token_endpoint",
+                "pt": "flow",
+                "to": "payload.token_endpoint",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "revocation_endpoint",
+                "pt": "flow",
+                "to": "payload.revocation_endpoint",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 80,
+        "wires": [
+            [
+                "592a2859357cd7e3"
+            ]
+        ]
+    },
+    {
+        "id": "3f2f84d03bbf3ceb",
+        "type": "debug",
+        "z": "aa64779bae1a6694",
+        "name": "oauth details",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "oauth2Response",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1025,
+        "y": 80,
+        "wires": [],
+        "l": false
+    },
+    {
+        "id": "181fcd142c72d7b3",
+        "type": "debug",
+        "z": "aa64779bae1a6694",
+        "name": "oauth2Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1250,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3e0a5a84b13edda3",
+        "type": "jwt verify",
+        "z": "aa64779bae1a6694",
+        "name": "verify id_token",
+        "alg": [
+            "RS256"
+        ],
+        "jwkurl": "https://oauth.platform.intuit.com/op/v1/jwks",
+        "secret": "",
+        "key": "",
+        "signvar": "token",
+        "storetoken": "token",
+        "x": 860,
+        "y": 280,
+        "wires": [
+            [
+                "abaca652bd5a11f3"
+            ]
+        ]
+    },
+    {
+        "id": "1e7754043f0ffe6c",
+        "type": "http in",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "url": "/connect",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 160,
+        "wires": [
+            [
+                "fbe6c49ea591a646"
+            ]
+        ]
+    },
+    {
+        "id": "efae94edbcd88c52",
+        "type": "http response",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 635,
+        "y": 160,
+        "wires": [],
+        "l": false
+    },
+    {
+        "id": "f9c5d0e02040d9e0",
+        "type": "http in",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "url": "/auth",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 240,
+        "wires": [
+            [
+                "5d749b2a91474e25"
+            ]
+        ]
+    },
+    {
+        "id": "92a37149fc61469f",
+        "type": "function",
+        "z": "aa64779bae1a6694",
+        "name": "build token request",
+        "func": "let token_endpoint = flow.get(\"token_endpoint\");\nlet client_id = flow.get(\"client_id\");\nlet client_secret = flow.get(\"client_secret\");\nlet client_auth_string = client_id + \":\" + client_secret;\nlet client_auth = \"Basic \" + Buffer.from(client_auth_string).toString('base64');\nlet auth_code = msg.payload.code;\nlet redirect_uri = flow.get(\"redirect_uri\");\n\nmsg = {\n    method: \"post\",\n    url: token_endpoint,\n    payload: {\n        \"grant_type\": \"authorization_code\",\n        \"code\": auth_code,\n        \"redirect_uri\": redirect_uri,\n    },\n    headers: {\n        \"Authorization\": client_auth,\n        \"Content-Type\": \"application/x-www-form-urlencoded\",\n        \"Accept\": \"application/json\"\n    },\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 240,
+        "wires": [
+            [
+                "e59044fa0a5ed137"
+            ]
+        ]
+    },
+    {
+        "id": "e59044fa0a5ed137",
+        "type": "http request",
+        "z": "aa64779bae1a6694",
+        "name": "get tokens",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "query",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 530,
+        "y": 240,
+        "wires": [
+            [
+                "e9ca8e9a70f092c4"
+            ]
+        ]
+    },
+    {
+        "id": "5d749b2a91474e25",
+        "type": "trigger",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "op1": "",
+        "op2": "",
+        "op1type": "pay",
+        "op2type": "pay",
+        "duration": "1",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 2,
+        "x": 175,
+        "y": 240,
+        "wires": [
+            [
+                "92a37149fc61469f"
+            ],
+            [
+                "58a66fddfc75c151"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "e9ca8e9a70f092c4",
+        "type": "change",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "token",
+                "pt": "msg",
+                "to": "payload.id_token",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "oauth2Response",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 800,
+        "y": 240,
+        "wires": [
+            [
+                "3e0a5a84b13edda3"
+            ]
+        ]
+    },
+    {
+        "id": "10bb8b0d86367376",
+        "type": "inject",
+        "z": "aa64779bae1a6694",
+        "name": "clear tokens",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 1250,
+        "y": 80,
+        "wires": [
+            [
+                "e006aee46afbbb0b"
+            ]
+        ]
+    },
+    {
+        "id": "e006aee46afbbb0b",
+        "type": "change",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "access_token",
+                "pt": "flow"
+            },
+            {
+                "t": "delete",
+                "p": "refresh_token",
+                "pt": "flow"
+            },
+            {
+                "t": "delete",
+                "p": "id_token",
+                "pt": "flow"
+            },
+            {
+                "t": "delete",
+                "p": "realmid",
+                "pt": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1365,
+        "y": 80,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "58a66fddfc75c151",
+        "type": "switch",
+        "z": "aa64779bae1a6694",
+        "name": "check realmId",
+        "property": "realmId",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "null"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 340,
+        "y": 280,
+        "wires": [
+            [
+                "d33fc4069151d699"
+            ],
+            [
+                "8925451e21bab5a0"
+            ]
+        ]
+    },
+    {
+        "id": "edb9ba71a723c37d",
+        "type": "http response",
+        "z": "aa64779bae1a6694",
+        "name": "f",
+        "statusCode": "",
+        "headers": {},
+        "x": 725,
+        "y": 280,
+        "wires": [],
+        "l": false
+    },
+    {
+        "id": "5e6c9ff92962ec69",
+        "type": "inject",
+        "z": "aa64779bae1a6694",
+        "name": "Manual Refresh Token",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "3",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 140,
+        "y": 500,
+        "wires": [
+            [
+                "a2c1fde81c28a37e"
+            ]
+        ]
+    },
+    {
+        "id": "25718899539227fa",
+        "type": "timer-node",
+        "z": "aa64779bae1a6694",
+        "name": "access_token timer",
+        "topic": "",
+        "timer": "3600",
+        "payloadOn": "true",
+        "payloadOnType": "bool",
+        "payloadOff": "false",
+        "payloadOffType": "bool",
+        "x": 170,
+        "y": 320,
+        "wires": [
+            [],
+            [
+                "a9f9e134d3969881"
+            ]
+        ]
+    },
+    {
+        "id": "2b43c1636d2c0459",
+        "type": "link in",
+        "z": "aa64779bae1a6694",
+        "name": "access_token_timer",
+        "links": [
+            "0459015fc79419f6",
+            "1138f94486b78cd6"
+        ],
+        "x": 35,
+        "y": 320,
+        "wires": [
+            [
+                "25718899539227fa"
+            ]
+        ]
+    },
+    {
+        "id": "55e83f829ca60d94",
+        "type": "link in",
+        "z": "aa64779bae1a6694",
+        "name": "refresh_token_timer",
+        "links": [
+            "aa43d987da215d9e",
+            "3b3d4e88ce3ddbea"
+        ],
+        "x": 35,
+        "y": 440,
+        "wires": [
+            [
+                "1c4a6cb9bf45aec2"
+            ]
+        ]
+    },
+    {
+        "id": "0459015fc79419f6",
+        "type": "link out",
+        "z": "aa64779bae1a6694",
+        "name": "access_token_timer_enabled",
+        "mode": "link",
+        "links": [
+            "2b43c1636d2c0459"
+        ],
+        "x": 1215,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "1138f94486b78cd6",
+        "type": "link out",
+        "z": "aa64779bae1a6694",
+        "name": "access_token_timer_countdown",
+        "mode": "link",
+        "links": [
+            "2b43c1636d2c0459"
+        ],
+        "x": 1215,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "aa43d987da215d9e",
+        "type": "link out",
+        "z": "aa64779bae1a6694",
+        "name": "refresh_token_timer_enabled",
+        "mode": "link",
+        "links": [
+            "55e83f829ca60d94"
+        ],
+        "x": 1265,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "3b3d4e88ce3ddbea",
+        "type": "link out",
+        "z": "aa64779bae1a6694",
+        "name": "refresh_token_timer_countdown",
+        "mode": "link",
+        "links": [
+            "55e83f829ca60d94"
+        ],
+        "x": 1265,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "1c4a6cb9bf45aec2",
+        "type": "timer-node",
+        "z": "aa64779bae1a6694",
+        "name": "refresh_token timer",
+        "topic": "",
+        "timer": "8726400",
+        "payloadOn": "true",
+        "payloadOnType": "bool",
+        "payloadOff": "false",
+        "payloadOffType": "bool",
+        "x": 170,
+        "y": 440,
+        "wires": [
+            [],
+            [
+                "a2c1fde81c28a37e"
+            ]
+        ]
+    },
+    {
+        "id": "a2c1fde81c28a37e",
+        "type": "function",
+        "z": "aa64779bae1a6694",
+        "name": "Refresh Token",
+        "func": "let refresh_token = flow.get(\"refresh_token\");\nlet access_token_url = flow.get(\"token_endpoint\");\nlet client_id = flow.get(\"client_id\");\nlet client_secret = flow.get(\"client_secret\");\nlet scope = flow.get(\"scope\")\n\nif (msg.payload <= 5184000) {\n  msg.oauth2Request = {\n    access_token_url: access_token_url,\n    credentials: {\n      grant_type: \"refresh_token\",\n      client_id: client_id,\n      client_secret: client_secret,\n      scope: scope,\n      refresh_token: refresh_token,\n    },\n  };\nreturn msg;\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 440,
+        "wires": [
+            [
+                "65b2d140b91efe4d"
+            ]
+        ]
+    },
+    {
+        "id": "65b2d140b91efe4d",
+        "type": "oauth2",
+        "z": "aa64779bae1a6694",
+        "name": "Refresh Token",
+        "container": "oauth2Response",
+        "grant_type": "set_by_credentials",
+        "access_token_url": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+        "authorization_endpoint": "https://appcenter.intuit.com/connect/oauth2",
+        "redirect_uri": "https://sandbox.superior-alarm.com/oauth2/redirect",
+        "open_authentication": "",
+        "username": "",
+        "password": "",
+        "client_id": "",
+        "client_secret": "",
+        "response_type": "",
+        "access_type": "",
+        "refresh_token": "",
+        "prompt": "",
+        "scope": "openid email profile address phone com.intuit.quickbooks.payment",
+        "resource": "https://sandbox.superior-alarm.com/auth",
+        "state": "sandbox-server",
+        "proxy": "",
+        "debug": true,
+        "force": true,
+        "senderr": false,
+        "client_credentials_in_body": true,
+        "rejectUnauthorized": false,
+        "headers": {},
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "abaca652bd5a11f3"
+            ]
+        ]
+    },
+    {
+        "id": "a9f9e134d3969881",
+        "type": "function",
+        "z": "aa64779bae1a6694",
+        "name": "Access Token",
+        "func": "let refresh_token = flow.get(\"refresh_token\");\nlet access_token_url = flow.get(\"token_endpoint\");\nlet client_id = flow.get(\"client_id\");\nlet client_secret = flow.get(\"client_secret\");\nlet scope = flow.get(\"scope\")\n\nif (msg.payload <= 300) {\n  msg.oauth2Request = {\n    access_token_url: access_token_url,\n    credentials: {\n      grant_type: \"client_credentials\",\n      client_id: client_id,\n      client_secret: client_secret,\n      scope: scope,\n      refresh_token: refresh_token,\n    },\n  };\n  return msg;\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 320,
+        "wires": [
+            [
+                "40c901b06f22c065"
+            ]
+        ]
+    },
+    {
+        "id": "40c901b06f22c065",
+        "type": "oauth2",
+        "z": "aa64779bae1a6694",
+        "name": "Access Token",
+        "container": "oauth2Response",
+        "grant_type": "set_by_credentials",
+        "access_token_url": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+        "authorization_endpoint": "https://appcenter.intuit.com/connect/oauth2",
+        "redirect_uri": "https://sandbox.superior-alarm.com/oauth2/redirect",
+        "open_authentication": "",
+        "username": "",
+        "password": "",
+        "client_id": "",
+        "client_secret": "",
+        "response_type": "",
+        "access_type": "",
+        "refresh_token": "",
+        "prompt": "",
+        "scope": "openid email profile address phone com.intuit.quickbooks.payment",
+        "resource": "https://sandbox.superior-alarm.com/auth",
+        "state": "sandbox-server",
+        "proxy": "",
+        "debug": true,
+        "force": true,
+        "senderr": false,
+        "client_credentials_in_body": true,
+        "rejectUnauthorized": false,
+        "headers": {},
+        "x": 660,
+        "y": 360,
+        "wires": [
+            [
+                "abaca652bd5a11f3"
+            ]
+        ]
+    },
+    {
+        "id": "7c242c330747b0fe",
+        "type": "inject",
+        "z": "aa64779bae1a6694",
+        "name": "Manual Access Token",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "3",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 140,
+        "y": 380,
+        "wires": [
+            [
+                "a9f9e134d3969881"
+            ]
+        ]
+    },
+    {
+        "id": "82002e888086480c",
+        "type": "switch",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "property": "oauth2Error",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1145,
+        "y": 240,
+        "wires": [
+            [
+                "181fcd142c72d7b3"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "592a2859357cd7e3",
+        "type": "switch",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "200",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 655,
+        "y": 80,
+        "wires": [
+            [
+                "29f60fcc4d05a870"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "17b923603d4795cb",
+        "type": "change",
+        "z": "aa64779bae1a6694",
+        "name": "redirect user to auth endpoint",
+        "rules": [
+            {
+                "t": "set",
+                "p": "statusCode",
+                "pt": "msg",
+                "to": "302",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "headers.Location",
+                "pt": "msg",
+                "to": "$flowContext('authorization_endpoint')\t& '?client_id=' & $flowContext('client_id')\t& '&response_type=code&scope='\t& $flowContext('scope') & '&redirect_uri='\t& $flowContext('redirect_uri') & '&state='\t& $flowContext('state')",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 160,
+        "wires": [
+            [
+                "efae94edbcd88c52",
+                "277d80aea18d7416"
+            ]
+        ]
+    },
+    {
+        "id": "fbe6c49ea591a646",
+        "type": "random-string",
+        "z": "aa64779bae1a6694",
+        "size": 16,
+        "characters": "",
+        "property": "state",
+        "x": 260,
+        "y": 160,
+        "wires": [
+            [
+                "17b923603d4795cb"
+            ]
+        ]
+    },
+    {
+        "id": "10bf19329a3c0ec5",
+        "type": "credentials",
+        "z": "aa64779bae1a6694",
+        "name": "",
+        "props": [
+            {
+                "value": "client_id",
+                "type": "flow"
+            },
+            {
+                "value": "client_secret",
+                "type": "flow"
+            }
+        ],
+        "x": 430,
+        "y": 80,
+        "wires": [
+            [
+                "7937ccc739614f55"
+            ]
+        ]
+    },
+    {
+        "id": "277d80aea18d7416",
+        "type": "debug",
+        "z": "aa64779bae1a6694",
+        "name": "debug 19",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "d33fc4069151d699",
+        "type": "change",
+        "z": "aa64779bae1a6694",
+        "name": "success",
+        "rules": [
+            {
+                "t": "set",
+                "p": "statusCode",
+                "pt": "msg",
+                "to": "302",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "headers.location",
+                "pt": "msg",
+                "to": "redir_after_connect",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 500,
+        "y": 280,
+        "wires": [
+            [
+                "edb9ba71a723c37d"
+            ]
+        ]
+    },
+    {
+        "id": "8925451e21bab5a0",
+        "type": "change",
+        "z": "aa64779bae1a6694",
+        "name": "fail",
+        "rules": [
+            {
+                "t": "set",
+                "p": "statusCode",
+                "pt": "msg",
+                "to": "302",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "headers.location",
+                "pt": "msg",
+                "to": "redir_after_connect_fail",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 630,
+        "y": 300,
+        "wires": [
+            [
+                "edb9ba71a723c37d"
+            ]
+        ]
+    }
+]
